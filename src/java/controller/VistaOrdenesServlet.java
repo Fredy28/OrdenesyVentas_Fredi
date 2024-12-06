@@ -34,15 +34,6 @@ public class VistaOrdenesServlet extends HttpServlet {
     PreparedStatement ps = null;
     ResultSet rs = null;
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -60,20 +51,11 @@ public class VistaOrdenesServlet extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<OrdenesModel> listaOrdenes = new ArrayList<>();
-        String sql = "select id, (select nombre from platillos) as nombre, notas from ordenes;";
+        String sql = "SELECT o.id AS id, GROUP_CONCAT(p.nombre SEPARATOR ', ') AS nombre, o.notas AS notas FROM ordenes o JOIN ordenes_detalle od ON o.id = od.orden_id JOIN platillos p ON od.platillo_id = p.id GROUP BY o.id, o.notas;";
 
         try {
             conn = conexion.getConnectionBD();
@@ -99,25 +81,13 @@ public class VistaOrdenesServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";

@@ -21,10 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import models.EntregablesModel;
 
-/**
- *
- * @author fredi
- */
+
 @WebServlet(urlPatterns = {"/ordenes_entregables_servlet"})
 public class OrdenesEntregablesServlet extends HttpServlet {
 
@@ -34,15 +31,6 @@ public class OrdenesEntregablesServlet extends HttpServlet {
     PreparedStatement ps = null;
     ResultSet rs = null;
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -64,7 +52,7 @@ public class OrdenesEntregablesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<EntregablesModel> listaEntregables = new ArrayList<>();
-        String sql = "select id, (select nombre from platillos) as nombre, cliente from ordenes;";
+        String sql = "SELECT o.id AS id, GROUP_CONCAT(p.nombre SEPARATOR ', ') AS nombre, o.cliente FROM ordenes o JOIN ordenes_detalle od ON o.id = od.orden_id JOIN platillos p ON od.platillo_id = p.id GROUP BY o.id, o.cliente;";
 
         try {
             conn = conexion.getConnectionBD();
@@ -98,41 +86,33 @@ public class OrdenesEntregablesServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         ConnectionBD conexion = new ConnectionBD();
-
-        // Obtener el valor de 'id' y convertirlo a int
         String idParam = request.getParameter("id");
         int id = 0;
-
-        // Validar el parámetro 'id'
         if (idParam == null || idParam.trim().isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Petición inválida
             return;
         }
-
-        try {
-            // Convertir 'id' a int
+        try { 
             id = Integer.parseInt(idParam);
         } catch (NumberFormatException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Parámetro inválido
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-
-        String sql = "DELETE FROM ordenes WHERE id = ?"; // Usar '=' en lugar de 'like' para la comparación exacta
-
+        String sql = "DELETE FROM ordenes WHERE id = ?";
         try {
             conn = conexion.getConnectionBD();
             ps = conn.prepareStatement(sql);
-            ps.setInt(1, id); // Usar setInt para parámetros de tipo entero
+            ps.setInt(1, id); 
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
-                response.setStatus(HttpServletResponse.SC_OK); // Eliminación exitosa
+                response.setStatus(HttpServletResponse.SC_OK);
             } else {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND); // No se encontró el registro
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND); 
             }
         } catch (Exception e) {
             e.printStackTrace();
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // Error del servidor
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
             try {
                 if (ps != null) {

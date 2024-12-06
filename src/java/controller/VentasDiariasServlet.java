@@ -34,15 +34,6 @@ public class VentasDiariasServlet extends HttpServlet {
     PreparedStatement ps = null;
     ResultSet rs = null;
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -60,20 +51,11 @@ public class VentasDiariasServlet extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         List<VentasModel> listaVentas = new ArrayList<>();
-        String sql = "select id, folio, cliente, fecha, (select sum(precio_unitario) from ordenes_detalle where orden_id = id) as total from ordenes;";
+        String sql = "SELECT id, folio, cliente, fecha, (SELECT SUM(precio_unitario) FROM ordenes_detalle WHERE orden_id = ordenes.id) AS total FROM ordenes;";
 
         try {
             conn = conexion.getConnectionBD();
@@ -86,12 +68,11 @@ public class VentasDiariasServlet extends HttpServlet {
                 venta.setFolio(rs.getString("folio"));
                 venta.setCliente(rs.getString("cliente"));
                 venta.setFecha(rs.getTimestamp("fecha"));
-                venta.setSicliente(rs.getString("sicliente"));
                 venta.setTotal(rs.getDouble("total"));
                 listaVentas.add(venta);
             }
 
-            request.setAttribute("ordenes", listaVentas);
+            request.setAttribute("ventas", listaVentas);
             request.getRequestDispatcher("/pages/admin/ventas_diarias_cajero.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -102,25 +83,12 @@ public class VentasDiariasServlet extends HttpServlet {
 
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";

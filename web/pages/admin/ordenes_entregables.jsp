@@ -40,6 +40,11 @@
             .finalizado-btn {
                 border-radius: 10px;
                 background-color: rgba(236, 55, 24, 1);
+                color: white;
+                font-size: 18px;
+                padding: 10px 20px;
+                width: 130px;
+                height: 50px; 
             }
         </style>
         <script>

@@ -15,7 +15,6 @@ public class VentasModel {
     private String folio;
     private String cliente;
     private Timestamp fecha;
-    private String sicliente;
     private Double total;
 
     public int getId() {
@@ -50,14 +49,6 @@ public class VentasModel {
         this.fecha = fecha;
     }
 
-    public String getSicliente() {
-        return sicliente;
-    }
-
-    public void setSicliente(String sicliente) {
-        this.sicliente = sicliente;
-    }
-
     public Double getTotal() {
         return total;
     }
@@ -65,6 +56,4 @@ public class VentasModel {
     public void setTotal(Double total) {
         this.total = total;
     }
-    
-    
 }
